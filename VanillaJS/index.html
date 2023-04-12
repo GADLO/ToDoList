@@ -5,21 +5,40 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/index.css">
+
     <title>ToDo</title>
 </head>
 
 
 <body>
     <header>Make Something To Do</header>
-    <div class="input-area">
-        <input type="text" class="input-text"> <button class="btn">add</button>
-    </div>
-    <div class="list-area">
-        <ul class="lists">
+    <div class="wrap">
+        <div class="list-hd">
+            <h1>ToDoList</h1>
+            <a href=""></a>
+        </div>
+        <div class="input-wrap">
+            <div class="input-bd">
+                <input type="text" class="input-text">
+            </div>
 
-        </ul>
+            <div class="btn-bd">
+                <button class="btn">
+                    NEW!
+                </button>
+            </div>
+        </div>
+        <div class="list-bd">
+            <ul class="lists">
+
+            </ul>
+        </div>
     </div>
+
+
+    <script src="./js/utils.js"></script>
     <script src="./js/toDoList.js"></script>
 </body>
 

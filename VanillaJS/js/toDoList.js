@@ -1,32 +1,38 @@
-var oInput = document.getElementsByClassName("input-text")[0],
-  oBtn = document.getElementsByClassName("btn")[0],
-  oUl = document.getElementsByClassName("lists")[0],
-  oLists = document.getElementsByTagName("li"),
-  isEdit = false,
-  currentIndex;
+var initToDoList = function () {
+  var oInput = document.getElementsByClassName("input-text")[0],
+    oBtn = document.getElementsByClassName("btn")[0],
+    oUl = document.getElementsByClassName("lists")[0],
+    oLists = document.getElementsByTagName("li"),
+    isEdit = false,
+    currentIndex;
 
-oBtn.addEventListener(
-  "click",
-  function () {
-    if (oInput.value === "") {
-      window.alert("空字符");
-      return;
-    }
-    if (isEdit) {
-      update(currentIndex, oInput.value);
-      isEdit = false;
-    } else {
-      add();
-    }
-    //输入框置空
-    oInput.value = "";
-  },
-  false
-);
+  generateTodo('DOM结构编写', oUl);
+  generateTodo('CSS样式绘制', oUl);
+  generateTodo('JS模块化编写', oUl)
 
-oUl.addEventListener(
-  "click",
-  function (e) {
+  //新增或更新todo事件监听
+  addEvent(oBtn,
+    "click",
+    function () {
+      if (oInput.value === "") {
+        window.alert("空字符");
+        return;
+      }
+      if (isEdit) {
+        update(currentIndex, oInput.value);
+        oLists[currentIndex].className = 'list'
+        isEdit = false;
+      } else {
+
+        generateTodo(oInput.value, oUl)
+      }
+      //输入框置空
+      oInput.value = "";
+    }
+  );
+
+  //删除或编辑todo事件监听
+  addEvent(oUl, 'click', function (e) {
     //事件对象兼容
     var e = e || window.event;
 
@@ -34,79 +40,75 @@ oUl.addEventListener(
     var tar = e.target || e.srcElement;
 
     //使用数组原型的indexOf找出当前事件源元素的下标
-    currentIndex = Array.prototype.indexOf.call(oLists, tar);
+    currentIndex = findIndex(oLists, tar);
 
     if (tar.className === "del") {
-      currentIndex = Array.prototype.indexOf.call(oLists, tar.parentElement);
+      currentIndex = findIndex(oLists, tar.parentElement);
       oLists[currentIndex].remove();
     } else if (tar.className === "edit") {
+      for (let i = 0; i < oLists.length; i++) {
+        oLists[i].className = 'list';
+
+      }
       isEdit = true;
-      currentIndex = Array.prototype.indexOf.call(oLists, tar.parentElement);
-      oInput.value = oLists[currentIndex].firstChild.nextSibling.nodeValue;
+
+      tar.parentElement.className !== 'list active' ? tar.parentElement.className += ' active' : ''
+      currentIndex = findIndex(oLists, tar.parentElement);
+      oInput.value = elemChildren(oLists[currentIndex])[1].innerText;
       oBtn.innerText = "update";
     }
-  },
-  false
-);
+  })
 
-function add() {
+
+
+  function update(index, text) {
+
+    elemChildren(oLists[index])[1].innerText = text;
+    oBtn.innerText = "NEW!";
+  }
+
+}
+
+//生成单一todo模版
+function generateTodo(text, parent) {
   //创建元素
   var oLi = document.createElement("li"),
     edit = document.createElement("button"),
     del = document.createElement("button"),
-    checkbox = document.createElement("input");
+    checkbox = document.createElement("input"),
+    p = document.createElement("p");
 
-  console.log(oInput.value);
-
-  //读取输入框文本
+  //todo内容新增，属性设置
   checkbox.setAttribute("type", "checkbox");
-  var text = document.createTextNode(oInput.value);
-  edit.innerText = "edit";
-  del.innerText = "delete";
+  p.innerText = text;
+  edit.innerText = "Edit";
+  del.innerText = "Delete";
 
-  //添加类名
+
+  //todo添加类名
+  oLi.className = 'list'
   edit.className = "edit";
   del.className = "del";
   checkbox.className = "check";
 
-  //新增一个list
+  //新增todo
   oLi.appendChild(checkbox);
-  oLi.appendChild(text);
+  oLi.appendChild(p);
   oLi.appendChild(edit);
   oLi.appendChild(del);
-  oUl.appendChild(oLi);
-
-  //输入框置空
-  oInput.value = "";
+  parent.appendChild(oLi);
 }
 
-function update(index, text) {
-  console.log(oLists[index].firstChild);
-  oLists[index].firstChild.nextSibling.nodeValue = text;
-  oBtn.innerText = "add";
+
+function findIndex(elemList, target) {
+  return Array.prototype.indexOf.call(elemList, target)
 }
 
-//在原型上编程，寻找兄弟节点，+找之后，-找之前，0找自己
-Element.prototype.elemSibling = function (n) {
-  var elem = this;
 
-  while (n) {
-    if (n > 0) {
-      for (
-        elem = elem.previousSibling;
-        elem && elem.nodeType !== 1;
-        elem = elem.previousSibling
-      );
-      n--;
-    } else if (n < 0) {
-      for (
-        elem = elem.nextSibling;
-        elem && elem.nodeType !== 1;
-        elem = elem.nextSibling
-      );
-      n++;
-    }
-  }
+//模块封装进init函数，方便进行开启或关闭模块
+function init() {
+  initToDoList();
+}
 
-  return elem;
-};
+
+init()
